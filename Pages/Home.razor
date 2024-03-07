@@ -1,0 +1,139 @@
+﻿@page "/"
+@using PizzaPlace.Utils
+@using PizzaPlace.Pages
+
+<PageTitle>Pizza Place</PageTitle>
+
+<h1>Our Pizzas</h1>
+
+<Alert Show="@ShowAlert">
+    <span class="pointer-event oi-check mr-2" aria-hidden="true"></span>
+    <strong>Order Placed</strong>
+</Alert>
+
+<DismissableAlert @bind-Show="ShowAlert">
+    <span class="pointer-event oi-check mr-2" aria-hidden="true"></span>
+    <strong>Dismissible</strong>
+</DismissableAlert>
+
+<Timer TimeInSeconds="5" Tick="ToggleAlert"></Timer>
+
+<button @onclick="ToggleAlert" class="btn btn-success">Toggle</button>
+@foreach (var pizza in State.Menu.PizzaList)
+{
+    <div class="row">
+        <div class="col">@pizza.Name</div>
+        <div class="col text-right">@($"{pizza.Price:0.00}")</div>
+        <div class="col"></div>
+        <div class="col">
+            <img src="@SpicinessImage(pizza.Spiciness)" alt="@pizza.Spiciness" />
+        </div>
+        <div class="col">
+            <button class="btn btn-success pl-4 pr-4" @onclick="@(()=> AddToBasket(pizza))">Add</button>
+        </div>
+    </div>
+}
+
+@if (State.ShoppingCart.Orders.Any())
+{
+    <h1 class="">Cart</h1>
+    @foreach (var (pizza, pos) in State.ShoppingCart.Orders.Select((id, pos) => (State.Menu.GetPizza(id), pos)))
+    {
+        <div class="row mb-2">
+            <div class="col"> @pizza.Name </div>
+            <div class="col text-right"> @($"{pizza.Price:0.00}") </div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col">
+                <button class="btn btn-danger" @onclick="@(() => RemoveFromBasket(pos))"> Remove </button>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col"></div>
+        <div class="col"><hr /></div>
+        <div class="col"> </div>
+        <div class="col"> </div>
+    </div>
+
+    <div class="row">
+        <div class="col"> Total:</div>
+        <div class="col text-right font-weight-bold"> @($"{State.TotalPrice:0.00}") </div>
+        <div class="col"> </div>
+        <div class="col"> </div>
+        <div class="col"> </div>
+    </div>
+
+
+    <h1>Please enter your details below</h1>
+    <EditForm Model="@State.ShoppingCart.Customer" OnValidSubmit="PlaceOrder">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <fieldset>
+            <div class="row mb-2">
+                <label class="col-2" for="name">Name:</label>
+                <InputText class="form-control col-6" id="name" @bind-Value="@State.ShoppingCart.Customer.Name" />
+            </div>
+            <div class="row mb-2">
+                <div class="col-6 offset-2">
+                    <ValidationMessage For="@(()=>State.ShoppingCart.Customer.Name)"/>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <label class="col-2" for="address">Street:</label>
+                <InputText class="form-control col-6" id="address" @bind-Value="@State.ShoppingCart.Customer.Address" />
+            </div>
+            <div class="row mb-2">
+                <div class="col-6 offset-2">
+                    <ValidationMessage For="@(()=>State.ShoppingCart.Customer.Address)" />
+                </div>
+            </div>
+            <div class="row mb-2">
+                <label class="col-2" for="city">City:</label>
+                <InputText class="form-control col-6" id="city" @bind-Value="@State.ShoppingCart.Customer.City" />
+            </div>
+            <div class="row mb-2">
+                <div class="col-6 offset-2">
+                    <ValidationMessage For="@(()=>State.ShoppingCart.Customer.City)" />
+                </div>
+            </div>
+            <button class="mx-auto w-25 btn btn-success" @onclick="PlaceOrder">Checkout</button>
+        </fieldset>
+    </EditForm>    
+}
+
+@code {
+    private State State { get; } = new State();
+
+    private bool showAlert = true; 
+    public bool ShowAlert
+    {
+        get => showAlert;
+        set
+        {
+            if(value != showAlert)
+            {
+                showAlert = value;
+            }
+        }
+    }
+
+
+    public void ToggleAlert()
+    {
+        Console.WriteLine("Toggle Alert");
+        ShowAlert = !ShowAlert;
+    }
+
+
+    protected override void OnInitialized()
+    {
+        State.Menu.Add(new Pizza(1, "Pepperoni", 8.99M, Spiciness.Spicy));
+        State.Menu.Add(new Pizza(2, "Margarita", 7.99M, Spiciness.None));
+        State.Menu.Add(new Pizza(3, "Diablo", 9.99M, Spiciness.Hot));
+    }
+
+    private string SpicinessImage(Spiciness spiciness) => $"Images/{spiciness.ToString().ToLower()}.png";
+    private void AddToBasket(Pizza pizza) => State.ShoppingCart.Add(pizza.Id);
+    private void RemoveFromBasket(int pos) => State.ShoppingCart.RemoveAt(pos);
+    private void PlaceOrder() { Console.WriteLine("Placing order"); }
+}
