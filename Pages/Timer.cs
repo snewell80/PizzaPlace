@@ -11,7 +11,7 @@ namespace PizzaPlace.Pages
 
         protected override void OnInitialized()
         {
-            var timer = new System.Threading.Timer(callback:(_)=> InvokeAsync(() => Tick?.Invoke()), state: null, dueTime: TimeSpan.FromSeconds(TimeInSeconds), period: Timeout.InfiniteTimeSpan);
+            var timer = new System.Threading.Timer(callback:(_)=> InvokeAsync(() => Tick.InvokeAsync()), state: null, dueTime: TimeSpan.FromSeconds(TimeInSeconds), period: Timeout.InfiniteTimeSpan);
         }
     }
 }

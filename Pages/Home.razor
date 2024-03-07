@@ -6,19 +6,6 @@
 
 <h1>Our Pizzas</h1>
 
-<Alert Show="@ShowAlert">
-    <span class="pointer-event oi-check mr-2" aria-hidden="true"></span>
-    <strong>Order Placed</strong>
-</Alert>
-
-<DismissableAlert @bind-Show="ShowAlert">
-    <span class="pointer-event oi-check mr-2" aria-hidden="true"></span>
-    <strong>Dismissible</strong>
-</DismissableAlert>
-
-<Timer TimeInSeconds="5" Tick="ToggleAlert"></Timer>
-
-<button @onclick="ToggleAlert" class="btn btn-success">Toggle</button>
 @foreach (var pizza in State.Menu.PizzaList)
 {
     <div class="row">
@@ -104,26 +91,15 @@
 @code {
     private State State { get; } = new State();
 
-    private bool showAlert = true; 
-    public bool ShowAlert
-    {
-        get => showAlert;
-        set
-        {
-            if(value != showAlert)
-            {
-                showAlert = value;
-            }
-        }
-    }
+    public bool ShowAlert { get; set; } = true;
 
 
     public void ToggleAlert()
     {
-        Console.WriteLine("Toggle Alert");
         ShowAlert = !ShowAlert;
     }
 
+    private DismissibleAlert alert = default!;
 
     protected override void OnInitialized()
     {

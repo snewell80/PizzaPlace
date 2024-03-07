@@ -2,23 +2,24 @@
 
 namespace PizzaPlace.Pages
 {
-    public partial class DismissibleAlert
+    public partial class DismissibleAlert : ComponentBase
     {
+        private bool show;
         [Parameter]
         public bool Show
         { 
-            get => Show;
+            get => show;
             set
             {
-                if(value != Show)
+                if(value != show)
                 {
-                    Show = value;
-                    ShowChanged?.Invoke(Show);
+                    show = value;
+                    ShowChanged.InvokeAsync(show);
                 }
             } 
         }
         [Parameter]
-        public Action<bool> ShowChanged { get; set; }
+        public EventCallback<bool> ShowChanged { get; set; }
         [Parameter] public RenderFragment ChildContent { get; set; } = default!;
         public void Dismiss() => Show = false;
     }
