@@ -6,7 +6,6 @@
 <PizzaList Title="Our Selection of Pizzas" Pizzas="@State.Menu.PizzaList" ButtonTitle="Order" ButtonClass="btn btn-success pl-4 pr-4" Selected="@AddToBasket" />
 <ShoppingCart Orders="@State.ShoppingCart.Orders" GetPizzaFromId="@State.Menu.GetPizza" Selected="@RemoveFromBasket"/>
 <CustomerInfo Title="Please enter your details" @bind-Customer="@State.ShoppingCart.Customer" ButtonTitle="Checkout" ButtonClass="mx-auto w-25 btn btn-success" ValidSubmit="PlaceOrder"/>
-@State.ToJson();
 @code {
     private State State { get; } = new State();
     public bool ShowAlert { get; set; } = true;
